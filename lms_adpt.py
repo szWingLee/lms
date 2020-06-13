@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import cv2 as cv
 
@@ -28,10 +29,17 @@ class LinearRegression:
     k_err_cnt = 0
     _idx = 0
 
-    def __init__(self, lr, sub_of: bool, init_frame=40):
+    def __init__(self, lr, sub_of: bool, ik0=None, ix0=None, ib0=None, init_frame=40):
         self.miu = lr
         self.init_cnt = init_frame
         self.sub_offset = sub_of
+        self.e_vec = []
+        if ik0 is not None:
+            self.k0 = ik0
+        if ix0 is not None:
+            self.x0 = ix0
+        if ib0 is not None:
+            self.b0 = ib0
 
     def _set_idx(self):
         self._idx += 1
@@ -148,7 +156,7 @@ class LinearRegression:
             self.b = self.my - self.k * self.mx
             self._rec_err()
             if self._idx % batch == 0:
-                print(self._idx)
+                print(self._idx, sys._getframe().f_code.co_name)
         return
 
     def calc_lr_m(self, loop, batch):
@@ -161,25 +169,32 @@ class LinearRegression:
 if __name__ == '__main__':
     see = 0
     cnt = 0
-    sub_base = True
+    sub_base = False
     err_cnt = 0
     k_err_cnt = 0
     in_loop = int(1e4)
     out_loop = int(100)
     in_batch = in_loop
     all_loop = (in_loop * out_loop)
+    start_frame = 40
     for ix in range(out_loop):
-        lr0 = LinearRegression(0.05, sub_base)
+        lr0 = LinearRegression(0.05, sub_base, init_frame=start_frame)
         # lms0.get_w()
         # lr0.calc_lms(int(1e5), int(1e3))
         # lr0.calc_lr(int(1e4), int(1e4))
         lr0.calc_lr_m(in_loop, in_batch)
-        ee = np.std(lr0.e_vec) / np.mean(lr0.e_vec)
+        x0 = np.mean(lr0.e_vec)
+        ee = np.std(lr0.e_vec) / x0
         if ee > 0.5:
             cnt += 1
             print('wrong ', lr0.err_cnt)
         err_cnt += lr0.err_cnt
         k_err_cnt += lr0.k_err_cnt
-        print('x-wrong ', lr0.err_cnt)
+        if lr0.err_cnt > 0:
+            print('x-wrong ', lr0.err_cnt)
         see += ee
+        lr1 = LinearRegression(0.05, sub_base, init_frame=start_frame, ix0=7)
+        lr1.calc_lr_m(in_loop, in_batch)
+        x1 = np.mean(lr1.e_vec)
+        print('lr_x ', x0/x1)
     print('done', see / 100, 'e-x:', err_cnt / all_loop, 'e-k:', k_err_cnt / all_loop)
