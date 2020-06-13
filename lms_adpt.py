@@ -63,7 +63,7 @@ class LinearRegression:
             # if idx < 50:
 
     def _init_xy(self, idx):
-        if idx < self.init_cnt:
+        if idx <= self.init_cnt:
             self.mx += self.beta * self.x
             self.my += self.beta * self.y
         else:
@@ -71,7 +71,7 @@ class LinearRegression:
             self.my = self.beta * self.y + (1 - self.beta) * self.my
 
     def _init_xy_m(self, idx):
-        if idx < self.init_cnt:
+        if idx <= self.init_cnt:
             self.my += self.beta * self.y
         else:
             self.my = self.beta * self.y + (1 - self.beta) * self.my
@@ -83,7 +83,7 @@ class LinearRegression:
         self.x = self.mx
 
     def _init_cov(self, idx):
-        if idx < self.init_cnt:
+        if idx <= self.init_cnt:
             # self.mxx += self.beta * self.x * self.x
             # self.mxy += self.beta * self.x * self.y
             return
@@ -137,7 +137,7 @@ class LinearRegression:
     def lr_online_m(self, batch):
         self._init_xy_m(self._idx)
         self._init_cov(self._idx)
-        if self._idx >= self.init_cnt:
+        if self._idx > self.init_cnt:
             rxy = (self.mxy - self.mx * self.my)
             rxx = (self.mxx - self.mx * self.mx)
             k = rxy / rxx
