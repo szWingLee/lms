@@ -193,7 +193,7 @@ if __name__ == '__main__':
         if lr0.err_cnt > 0:
             print('x-wrong ', lr0.err_cnt)
         see += ee
-        lr1 = LinearRegression(0.05, sub_base, init_frame=start_frame, ix0=7)
+        lr1 = LinearRegression(0.05, sub_base, init_frame=start_frame, ik0=7)
         lr1.calc_lr_m(in_loop, in_batch)
         x1 = np.mean(lr1.e_vec)
         print('lr_x ', x0/x1)
