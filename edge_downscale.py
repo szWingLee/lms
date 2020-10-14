@@ -50,7 +50,7 @@ class DownScale:
 
     def img_resize(self):
         # bmp = cv.resize(self.gray, (self.rows//self.scale, self.cols//self.scale), interpolation=cv.INTER_BITS)
-        bmp = cv.resize(self.gray, (560, 560), interpolation=cv.INTER_BITS)
+        bmp = cv.resize(self.gray, (480, 480), interpolation=cv.INTER_CUBIC)
         return bmp
 
     def img_direct_sample(self):
@@ -71,12 +71,22 @@ class DownScale:
 
 if __name__ == '__main__':
     img = cv.imread('timg.jpg')
-    img_resize = DownScale(scale=3, src=img, sobel_size=7)
+    img1 = cv.GaussianBlur(img, (9, 9), 1.5)
+    cv.imwrite('rgb0_ftr.png', img1)
+    cv.imwrite('rgb0.png', img)
+    hsv = cv.cvtColor(img, cv.COLOR_BGR2HLS_FULL)
+    rgb = cv.cvtColor(hsv, cv.COLOR_HLS2BGR_FULL)
+    cv.imwrite('rgb1.png', rgb)
+    h, s, v = cv.split(hsv)
+    hsv = cv.GaussianBlur(hsv, (9, 9), 1.5)
+    rgb2 = cv.cvtColor(hsv, cv.COLOR_HLS2BGR_FULL)
+    cv.imwrite('hsv_ftr_hls.png', rgb2)
+    # img_resize = DownScale(scale=3, src=img, sobel_size=7)
     # cv.imwrite('gray.png', img_resize.gray)
-    img_edge = img_resize.edge_detect()
+    # img_edge = img_resize.edge_detect()
     # cv.imwrite('edge-3.png', img_edge)
-    img_scaled = img_resize.down_image()
-    cv.imwrite('downscale-mk.png', img_scaled)
+    # img_scaled = img_resize.down_image()
+    # cv.imwrite('downscale-mk-1.png', img_scaled)
     # cv.imwrite('resize-d.png', img_resize.img_direct_sample())
     # cv.imwrite('resize-bits.png', img_resize.img_resize())
     print('done')
